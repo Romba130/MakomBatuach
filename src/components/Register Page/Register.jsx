@@ -2,22 +2,32 @@ import React, { useState } from 'react';
 import TextBox from "../Template parts/TextBox";
 import SelectBox from "../Template parts/SelectBox";
 import RegisterTitle from "./RegisterTitle";
-import {selectBoxArray} from "./Register-Data/selectBoxArray";
-import {textBoxesArray} from "./Register-Data/textBoxesArray";
+import { selectBoxArray } from "./Register-Data/selectBoxArray";
+import { textBoxesArray } from "./Register-Data/textBoxesArray";
 import backArrow from "../../Photos/backArrow.svg";
 import ButtonCard from '../Template parts/ButtonCard';
 import '../../CSS/register.css';
+import axios from 'axios'
+import Swal from 'sweetalert2';
 
 const RegisterBoxs = () => {
 
-    const [name, setName] = useState('');
+    const [firstName, setFirstName] = useState('');
+    const [lastName, setLastName] = useState('');
+    const [id, setId] = useState('');
     const [email, seteEMail] = useState('');
     const [gender, setGender] = useState('');
     const [birthDate, setBirthDate] = useState('');
     const [password, setPassword] = useState('');
-    
-    const handleNameChange = (value) => {
-        setName(value);
+
+    const handleFirstNameChange = (value) => {
+        setFirstName(value);
+    }
+    const handleLastNameChange = (value) => {
+        setLastName(value);
+    }
+    const handleIdChange = (value) => {
+        setId(value);
     }
 
     const handleEmailChange = (value) => {
@@ -37,26 +47,46 @@ const RegisterBoxs = () => {
     }
 
     //לוחץ על צור משתמש זה הפונקציה עם הולידציה בנוגע למידע לעדכן לולידציה רלוונטית
-    const registerAcount = (event) => {
+    const registerAcount = async (event) => {
         event.preventDefault();
-        const registerData = {
-            enteredName: name,
-            enteredEmail: email,
-            enteredGender: gender,
-            enteredBirthDay: new Date(birthDate),
-            enteredPassword:password
-        };
-        console.log(registerData);
-        setName('');
-        seteEMail('');
-        setGender('');
-        setBirthDate('');
-        setPassword('');
+        try {
+            const response = await axios.post('http://localhost:50867/api/SignInUser/SignIn', {
+                FirstName: firstName,
+                LastName: lastName,
+                BirthDate: birthDate,
+                Email: email,
+                Gender: gender,
+                Patient_Id: id,
+                Password: password,
+                StartDate: new Date()
+            });
+            if (response.status === 200) {
+                Swal.fire(
+                    'Welcome',
+                    `${firstName} ${lastName} You Have Signed In to Makom Batuach`,
+                    'success'
+                  )
+            }
+            else if (response.status === 400){
+                Swal.fire({
+                    icon:'error',
+                    title: 'Oops...',
+                    text: 'Email is Already Register, Please Try Other Email'
+                })
+            }
+        } catch (error) {
+            console.error('Request failed with status code', error.response.status);
+        }
+
+
     };
 
-    return(
+
+
+
+    return (
         <div className="register-boxs-div">
-            <img className="back-from-register" src={backArrow} alt="Back arrow"/>
+            <img className="back-from-register" src={backArrow} alt="Back arrow" />
             <form onSubmit={registerAcount}>
                 <div className='register-input-div'>
                     <RegisterTitle />
@@ -65,16 +95,34 @@ const RegisterBoxs = () => {
                         title={textBoxesArray[0].title}
                         placeHolder={textBoxesArray[0].placeHolder}
                         type={textBoxesArray[0].type}
-                        autoComplete= {textBoxesArray[0].autoComplete}
-                        value={name}
-                        onChange={handleNameChange}
+                        autoComplete={textBoxesArray[0].autoComplete}
+                        value={firstName}
+                        onChange={handleFirstNameChange}
                     />
                     <TextBox
                         id={textBoxesArray[1].id}
                         title={textBoxesArray[1].title}
                         placeHolder={textBoxesArray[1].placeHolder}
                         type={textBoxesArray[1].type}
-                        autoComplete= {textBoxesArray[0].autoComplete}
+                        autoComplete={textBoxesArray[1].autoComplete}
+                        value={lastName}
+                        onChange={handleLastNameChange}
+                    />
+                    <TextBox
+                        id={textBoxesArray[2].id}
+                        title={textBoxesArray[2].title}
+                        placeHolder={textBoxesArray[2].placeHolder}
+                        type={textBoxesArray[2].type}
+                        autoComplete={textBoxesArray[2].autoComplete}
+                        value={id}
+                        onChange={handleIdChange}
+                    />
+                    <TextBox
+                        id={textBoxesArray[3].id}
+                        title={textBoxesArray[3].title}
+                        placeHolder={textBoxesArray[3].placeHolder}
+                        type={textBoxesArray[3].type}
+                        autoComplete={textBoxesArray[3].autoComplete}
                         value={email}
                         onChange={handleEmailChange}
                     />
@@ -87,20 +135,20 @@ const RegisterBoxs = () => {
                         onChange={handleGenderChange}
                     />
                     <TextBox
-                        id={textBoxesArray[2].id}
-                        title={textBoxesArray[2].title}
-                        placeHolder={textBoxesArray[2].placeHolder}
-                        type={textBoxesArray[2].type}
-                        autoComplete= {textBoxesArray[2].autoComplete}
+                        id={textBoxesArray[4].id}
+                        title={textBoxesArray[4].title}
+                        placeHolder={textBoxesArray[4].placeHolder}
+                        type={textBoxesArray[4].type}
+                        autoComplete={textBoxesArray[4].autoComplete}
                         value={birthDate}
                         onChange={handleBirthDateChange}
                     />
                     <TextBox
-                        id={textBoxesArray[3].id}
-                        title={textBoxesArray[3].title}
-                        placeHolder={textBoxesArray[3].placeHolder}
-                        type={textBoxesArray[3].type}
-                        autoComplete= {textBoxesArray[3].autoComplete}
+                        id={textBoxesArray[5].id}
+                        title={textBoxesArray[5].title}
+                        placeHolder={textBoxesArray[5].placeHolder}
+                        type={textBoxesArray[5].type}
+                        autoComplete={textBoxesArray[5].autoComplete}
                         value={password}
                         onChange={handlePasswordChange}
                     />
